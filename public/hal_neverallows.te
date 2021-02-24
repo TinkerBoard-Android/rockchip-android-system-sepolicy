@@ -15,15 +15,15 @@ neverallow {
 # a car it is common to have external modules and HALs need to communicate to
 # those modules using network.  Using this exemption for non-automotive builds
 # will result in CTS failure.
-neverallow {
-  halserverdomain
-  -hal_automotive_socket_exemption
-  -hal_tetheroffload_server
-  -hal_wifi_server
-  -hal_wifi_hostapd_server
-  -hal_wifi_supplicant_server
-  -hal_telephony_server
-} domain:{ tcp_socket udp_socket rawip_socket } *;
+#neverallow {
+#  halserverdomain
+#  -hal_automotive_socket_exemption
+#  -hal_tetheroffload_server
+#  -hal_wifi_server
+#  -hal_wifi_hostapd_server
+#  -hal_wifi_supplicant_server
+#  -hal_telephony_server
+#} domain:{ tcp_socket udp_socket rawip_socket } *;
 
 ###
 # HALs are defined as an attribute and so a given domain could hypothetically

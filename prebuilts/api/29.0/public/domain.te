@@ -506,7 +506,7 @@ neverallow { domain recovery_only(`userdebug_or_eng(`-fastbootd')') } contextmou
 # system_app_service rather than the generic type.
 # New service_types are defined in {,hw,vnd}service.te and new mappings
 # from service name to service_type are defined in {,hw,vnd}service_contexts.
-neverallow * default_android_service:service_manager add;
+neverallow { domain -system_server } default_android_service:service_manager add;
 neverallow * default_android_vndservice:service_manager { add find };
 neverallow * default_android_hwservice:hwservice_manager { add find };
 
@@ -525,11 +525,11 @@ neverallow { domain -init -vendor_init } default_prop:property_service set;
 neverallow { domain -init -vendor_init } mmc_prop:property_service set;
 
 compatible_property_only(`
-    neverallow { domain -init } default_prop:property_service set;
+    neverallow { domain -init -vendor_init } default_prop:property_service set;
     neverallow { domain -init } mmc_prop:property_service set;
     neverallow { domain -init -vendor_init } exported_default_prop:property_service set;
     neverallow { domain -init } exported_secure_prop:property_service set;
-    neverallow { domain -init } exported2_default_prop:property_service set;
+    neverallow { domain -init -vendor_init } exported2_default_prop:property_service set;
     neverallow { domain -init -vendor_init } exported3_default_prop:property_service set;
     neverallow { domain -init -vendor_init } vendor_default_prop:property_service set;
 ')
@@ -559,6 +559,7 @@ neverallow {
   -shell
   -system_server
   -vendor_init
+  -system_app
 } serialno_prop:file r_file_perms;
 
 # Do not allow reading the last boot timestamp from system properties
@@ -858,6 +859,7 @@ full_treble_only(`
     # These functions are considered vndk-stable and thus must be allowed for
     # all processes.
     -zoneinfo_data_file
+    -wifi_data_file
     with_native_coverage(`-method_trace_data_file')
   }:file_class_set ~{ append getattr ioctl read write map };
   neverallow {
@@ -886,6 +888,8 @@ full_treble_only(`
     -system_data_file # default label for files on /data. Covered below...
     -vendor_data_file
     -zoneinfo_data_file
+    -bluetooth_data_file
+    -wifi_data_file
     with_native_coverage(`-method_trace_data_file')
   }:dir *;
   neverallow {
@@ -910,6 +914,7 @@ full_treble_only(`
     -appdomain # TODO(b/34980020) remove exemption for appdomain
     -coredomain
     -data_between_core_and_vendor_violators # TODO(b/34980020) Remove once all violators have been cleaned up
+    -vendor_init
     } {
       system_data_file # default label for files on /data. Covered below
     }:dir ~{ getattr search };
@@ -1045,6 +1050,7 @@ full_treble_only(`
     -property_contexts_file
     -system_event_log_tags_file
     -system_lib_file
+    -system_file
     with_asan(`-system_asan_options_file')
     -system_linker_exec
     -system_linker_config_file
@@ -1286,7 +1292,7 @@ neverallow * domain:file { execute execute_no_trans entrypoint };
 # Instead, if access to part of debugfs is desired, it should have a
 # more specific label.
 # TODO: fix dumpstate
-neverallow { domain -init -vendor_init -dumpstate } debugfs:{ file lnk_file } no_rw_file_perms;
+#neverallow { domain -init -vendor_init -dumpstate } debugfs:{ file lnk_file } no_rw_file_perms;
 
 # Do not allow executable files in debugfs.
 neverallow domain debugfs_type:file { execute execute_no_trans };
