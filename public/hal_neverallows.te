@@ -20,6 +20,7 @@ neverallow {
 neverallow {
   halserverdomain
   -hal_automotive_socket_exemption
+  -hal_bluetooth_server
   -hal_can_controller_server
   -hal_tetheroffload_server
   -hal_wifi_server
